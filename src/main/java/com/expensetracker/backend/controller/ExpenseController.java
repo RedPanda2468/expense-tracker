@@ -1,8 +1,9 @@
 package com.expensetracker.backend.controller;
-
+import jakarta.validation.Valid;
 import com.expensetracker.backend.model.Expense;
-import com.expensetracker.backend.repository.ExpenseRepository;
+import com.expensetracker.backend.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
+import com.expensetracker.backend.dto.ExpenseRequest;
 
 import java.util.List;
 
@@ -10,44 +11,52 @@ import java.util.List;
 @RequestMapping("/api/expenses")
 public class ExpenseController {
 
-    private final ExpenseRepository expenseRepository;
+    private final ExpenseService expenseService;
 
-    public ExpenseController(ExpenseRepository expenseRepository) {
-        this.expenseRepository = expenseRepository;
+    public ExpenseController(ExpenseService expenseService) {
+        this.expenseService = expenseService;
     }
 
     @GetMapping
     public List<Expense> getExpenses() {
-        return expenseRepository.findAll();
+        return expenseService.getAllExpenses();
     }
 
     @GetMapping("/{id}")
-public Expense getExpenseById(@PathVariable Long id) {
-    return expenseRepository.findById(id)
-            .orElseThrow();
+    public Expense getExpenseById(@PathVariable Long id) {
+        return expenseService.getExpenseById(id);
     }
 
     @PostMapping
-    public Expense createExpense(@RequestBody Expense expense) {
-        return expenseRepository.save(expense);
+public Expense createExpense(@Valid @RequestBody ExpenseRequest request) {
+
+    Expense expense = new Expense();
+
+    expense.setTitle(request.getTitle());
+    expense.setAmount(request.getAmount());
+    expense.setCategory(request.getCategory());
+    expense.setDate(request.getDate());
+
+    return expenseService.createExpense(expense);
+}
+
+   @PutMapping("/{id}")
+public Expense updateExpense(
+        @PathVariable Long id,
+        @Valid @RequestBody ExpenseRequest request) {
+
+    Expense expense = new Expense();
+
+    expense.setTitle(request.getTitle());
+    expense.setAmount(request.getAmount());
+    expense.setCategory(request.getCategory());
+    expense.setDate(request.getDate());
+
+    return expenseService.updateExpense(id, expense);
+}
+
+    @DeleteMapping("/{id}")
+    public void deleteExpense(@PathVariable Long id) {
+        expenseService.deleteExpense(id);
     }
-
-    @PutMapping("/{id}")
-public Expense updateExpense(@PathVariable Long id, @RequestBody Expense expense) {
-    Expense existingExpense = expenseRepository.findById(id)
-            .orElseThrow();
-
-    existingExpense.setTitle(expense.getTitle());
-    existingExpense.setAmount(expense.getAmount());
-    existingExpense.setCategory(expense.getCategory());
-    existingExpense.setDate(expense.getDate());
-
-    return expenseRepository.save(existingExpense);
-}
-
-@DeleteMapping("/{id}")
-public void deleteExpense(@PathVariable Long id) {
-    expenseRepository.deleteById(id);
-}
-
 }

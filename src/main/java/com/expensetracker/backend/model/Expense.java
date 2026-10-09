@@ -1,6 +1,9 @@
+
 package com.expensetracker.backend.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -18,7 +21,8 @@ public class Expense {
 
     private double amount;
 
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ExpenseCategory category;
 
     private LocalDate date;
 
@@ -45,11 +49,11 @@ public class Expense {
         this.amount = amount;
     }
 
-    public String getCategory() {
+    public ExpenseCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ExpenseCategory category) {
         this.category = category;
     }
 
@@ -61,3 +65,4 @@ public class Expense {
         this.date = date;
     }
 }
+```
