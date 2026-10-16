@@ -1,7 +1,9 @@
 package com.expensetracker.backend.exception;
 
 import java.util.HashMap;
+
 import java.util.Map;
+import com.expensetracker.backend.exception.ExpenseNotFoundException;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,6 +13,18 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+        @ExceptionHandler(ExpenseNotFoundException.class)
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public Map<String, Object> handleExpenseNotFound(
+        ExpenseNotFoundException exception) {
+
+    Map<String, Object> response = new HashMap<>();
+    response.put("status", 404);
+    response.put("message", exception.getMessage());
+
+    return response;
+}
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

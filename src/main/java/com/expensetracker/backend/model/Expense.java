@@ -1,5 +1,6 @@
 
 package com.expensetracker.backend.model;
+import java.math.BigDecimal;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -19,7 +20,7 @@ public class Expense {
 
     private String title;
 
-    private double amount;
+    private BigDecimal amount;
 
     @Enumerated(EnumType.STRING)
     private ExpenseCategory category;
@@ -41,11 +42,11 @@ public class Expense {
         this.title = title;
     }
 
-    public double getAmount() {
-        return amount;
+    public BigDecimal getAmount() {
+    return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
@@ -65,4 +66,3 @@ public class Expense {
         this.date = date;
     }
 }
-```

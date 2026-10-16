@@ -1,8 +1,29 @@
 package com.expensetracker.backend.controller;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
+import com.expensetracker.backend.dto.CategorySummary;
+import com.expensetracker.backend.dto.MonthlySummary;
+import java.math.BigDecimal;
+
+import com.expensetracker.backend.dto.CategorySummary;
+import com.expensetracker.backend.dto.MonthlySummary;
+import java.math.BigDecimal;
+
+
+import java.time.LocalDate;
 import jakarta.validation.Valid;
 import com.expensetracker.backend.model.Expense;
+import com.expensetracker.backend.model.ExpenseCategory;
 import com.expensetracker.backend.service.ExpenseService;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import org.springframework.web.bind.annotation.RequestParam;
+
+
 import com.expensetracker.backend.dto.ExpenseRequest;
 
 import java.util.List;
@@ -16,6 +37,69 @@ public class ExpenseController {
     public ExpenseController(ExpenseService expenseService) {
         this.expenseService = expenseService;
     }
+    @GetMapping("/page")
+public Page<Expense> getExpensesPaginated(
+        @PageableDefault(size = 5) Pageable pageable) {
+    return expenseService.getExpensesPaginated(pageable);
+}
+
+@GetMapping("/summary/range")
+public BigDecimal getTotalExpensesBetween(
+        @RequestParam
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate startDate,
+
+        @RequestParam
+        @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
+        LocalDate endDate) {
+
+    if (startDate.isAfter(endDate)) {
+        throw new ResponseStatusException(
+                HttpStatus.BAD_REQUEST,
+                "startDate must be on or before endDate"
+        );
+    }
+
+    return expenseService.getTotalExpensesBetween(startDate, endDate);
+}
+@GetMapping("/summary")
+public BigDecimal getTotalExpenses() {
+    return expenseService.getTotalExpenses();
+}
+
+@GetMapping("/summary/by-category")
+public List<CategorySummary> getCategorySummary() {
+    return expenseService.getCategorySummary();
+}
+
+@GetMapping("/summary/monthly")
+public List<MonthlySummary> getMonthlySummary() {
+    return expenseService.getMonthlySummary();
+}
+
+    
+    @GetMapping("/filter")
+    public List<Expense> filterExpenses(
+        @RequestParam(required = false) ExpenseCategory category,
+        @RequestParam(required = false) LocalDate startDate,
+        @RequestParam(required = false) LocalDate endDate) {
+
+    if (startDate != null && endDate != null && category != null) {
+        return expenseService.getExpensesByCategoryAndDateRange(
+                category, startDate, endDate);
+    }
+
+    if (category != null) {
+        return expenseService.getExpensesByCategory(category);
+    }
+
+    if (startDate != null && endDate != null) {
+        return expenseService.getExpensesByDateRange(startDate, endDate);
+    }
+
+    return expenseService.getAllExpenses();
+}
+
 
     @GetMapping
     public List<Expense> getExpenses() {

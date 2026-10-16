@@ -1,23 +1,24 @@
+
 package com.expensetracker.backend.dto;
 
+import com.expensetracker.backend.model.ExpenseCategory;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import com.expensetracker.backend.model.ExpenseCategory;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
-
-import com.expensetracker.backend.model.ExpenseCategory;
 
 public class ExpenseRequest {
 
     @NotBlank(message = "Title is required")
     private String title;
 
+    @NotNull(message = "Amount is required")
     @Positive(message = "Amount must be greater than 0")
-    private double amount;
+    private BigDecimal amount;
 
-    @NotBlank(message = "Category is required")
+    @NotNull(message = "Category is required")
     private ExpenseCategory category;
 
     @NotNull(message = "Date is required")
@@ -31,19 +32,19 @@ public class ExpenseRequest {
         this.title = title;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
-    public String getCategory() {
+    public ExpenseCategory getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(ExpenseCategory category) {
         this.category = category;
     }
 
@@ -54,11 +55,4 @@ public class ExpenseRequest {
     public void setDate(LocalDate date) {
         this.date = date;
     }
-    public ExpenseCategory getCategory() {
-    return category;
-    }
-
-    public void setCategory(ExpenseCategory category) {
-        this.category = category;
-}
 }
